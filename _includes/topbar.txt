@@ -5,7 +5,9 @@
         <div class="container">
           <a class="brand" href="/"><img class="logo" src="imgs/scala-logo.png"/> Improvement Process</a>
           <ul class="nav">
+           <li><a href="how-to-add-a-sid.html">Submitting</a></li>
            <li><a href="index.html#pending">Pending</a></li>
+           <li><a href="index.html#rejected">Rejected</a></li>
            <li><a href="index.html#completed">Completed</a></li>
           </ul>
         </div>
