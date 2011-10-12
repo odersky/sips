@@ -1,0 +1,13 @@
+    <!-- Topbar
+    ================================================== -->
+    <div class="topbar" >
+      <div class="topbar-inner">
+        <div class="container">
+          <a class="brand" href="/"><img class="logo" src="/imgs/scala-logo.png"/> Improvement Process</a>
+          <ul class="nav">
+           <li><a href="/index.html#pending">Pending</a></li>
+           <li><a href="/index.html#completed">Completed</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
