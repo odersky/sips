@@ -16,7 +16,7 @@ So, here is the proposal (for Scala 2.10):
 
 2.  Allow the following alternative syntax form:
 
-    if expression then expression [else expression]
+        if expression then expression [else expression]
 
 3.  At some point in the future (there’s no rush) we could deprecate the form   
 
@@ -33,7 +33,7 @@ do-while is easy. Simply do the following:
 
 1. Allow
 
-       do expression while expression
+        do expression while expression
 
 as syntax (i.e. drop the required parentheses around the condition).
 
@@ -45,13 +45,13 @@ For while loops:
 
 1. Allow
 
-       while expression do expression
+        while expression do expression
 
    as syntax.
 
 We then have to deal with an ambiguity: What should we do with
 
-    while (expression1) do expression2 while (expression3)
+        while (expression1) do expression2 while (expression3)
 
 ? I.e. a `do-while` loop inside an old-style `while` loop? Here’s a possible migration strategy.
 
@@ -73,7 +73,7 @@ In Scala 2.11: Disallow
 
 In Scala 2.12: Drop the restriction introduced in 2.10. Conditions in a `while-do` can now be arbitrary expressions including with parentheses at the outside.
 
-## part 4: `for` ##
+## Part 4: `for` ##
 
 For-loops and for expressions can be handled similarly:
 
