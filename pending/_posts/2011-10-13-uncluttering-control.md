@@ -1,7 +1,6 @@
 ---
 layout: sip
 title: Uncluttering Scala’s syntax for control structures.
-Inline classes
 ---
 
 __Motivation__: The more Scala code I write the more I get tripped up by the need to write conditions in  if-then-else expressions and other control constructs in parentheses. I normally would not advocate syntax changes at this level, except that this has been the single syntax decision that feels worse for me the longer I use it.
@@ -47,31 +46,31 @@ For while loops:
 
         while expression do expression
 
-   as syntax.
+    as syntax.
 
 We then have to deal with an ambiguity: What should we do with
 
-        while (expression1) do expression2 while (expression3)
+    while (expression1) do expression2 while (expression3)
 
 ? I.e. a `do-while` loop inside an old-style `while` loop? Here’s a possible migration strategy.
 
-In Scala 2.10:  Introduce     
+2.  In Scala 2.10:  Introduce     
 
-    while expression1 do expression2    
+        while expression1 do expression2    
 
-where `expression1` is not allowed to have parentheses at the outermost level (there’s no need to have them anyway). Also, emit a deprecation warning if the compiler comes across a do-while nested directly in an old-style while:
+    where `expression1` is not allowed to have parentheses at the outermost level (there’s no need to have them anyway). Also, emit a deprecation warning if the compiler comes across a do-while nested directly in an old-style while:
 
-    while (expression1) do expression2 while expression3
+        while (expression1) do expression2 while expression3
 
-To write a `do-while` inside a `while` loop you will need braces, like this:
+    To write a `do-while` inside a `while` loop you will need braces, like this:
+ 
+        while (expression1) { do expression2 while epression3 }
 
-    while (expression1) { do expression2 while epression3 }
+3.  In Scala 2.11: Disallow
 
-In Scala 2.11: Disallow
+        while (expression1) do expression2 while expression3
 
-    while (expression1) do expression2 while expression3
-
-In Scala 2.12: Drop the restriction introduced in 2.10. Conditions in a `while-do` can now be arbitrary expressions including with parentheses at the outside.
+4.  In Scala 2.12: Drop the restriction introduced in 2.10. Conditions in a `while-do` can now be arbitrary expressions including with parentheses at the outside.
 
 ## Part 4: `for` ##
 
@@ -81,15 +80,15 @@ For-loops and for expressions can be handled similarly:
 
         for enumerators yield expression
 
-as syntax. Enumerators are treated as if they were in  braces, i.e. newlines can separate generators without the need for additional semicolons.
+    as syntax. Enumerators are treated as if they were in  braces, i.e. newlines can separate generators without the need for additional semicolons.
 
-2. Allow
+2.  Allow
 
         for enumerators do expression
 
-as syntax. Treat `do-while` ambiguities as in the case for `while`.
+    as syntax. Treat `do-while` ambiguities as in the case for `while`.
 
-3. At some point in the future: deprecate, and then drop the syntax
+3.  At some point in the future: deprecate, and then drop the syntax
 
         for (enumerators) expression
         for {enumerators} expression
