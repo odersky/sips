@@ -3,9 +3,13 @@ layout: sip
 title: Uncluttering Scala’s syntax for control structures.
 ---
 
+__Martin Odersky__
+__first submitted 13 October 2011__
+
+
 __Motivation__: The more Scala code I write the more I get tripped up by the need to write conditions in  if-then-else expressions and other control constructs in parentheses. I normally would not advocate syntax changes at this level, except that this has been the single syntax decision that feels worse for me the longer I use it.
 
-## Part 1: `if` ##
+## Part 1: if ##
 
 Having to write parentheses is an unfortunate inheritance from C via Java. It makes code more cluttered than it could be. In C/C++/Java this was no big deal, but because Scala is much cleaner syntactically than these languages it starts to stick out like a sore thumb. This in particular because only one form of `if` comes with parentheses; if you use an if as a filter in a for expression or as a guard in a pattern, no parentheses are required.
 
@@ -26,7 +30,7 @@ So, here is the proposal (for Scala 2.10):
 
 Once we have dealt with if, we should do the same thing with while, do-while and for.
 
-## Part 2: `do-while` ##
+## Part 2: do-while ##
 
 do-while is easy. Simply do the following:
 
@@ -38,7 +42,7 @@ do-while is easy. Simply do the following:
 
 While loops and for loops are more tricky. 
 
-## Part 3: `while` ##
+## Part 3: while ##
 
 For while loops:
 
@@ -70,7 +74,7 @@ For while loops:
 
 4.  In Scala 2.12: Drop the restriction introduced in 2.10. Conditions in a `while-do` can now be arbitrary expressions including with parentheses at the outside.
 
-## Part 4: `for` ##
+## Part 4: for ##
 
 For-loops and for expressions can be handled similarly:
 
