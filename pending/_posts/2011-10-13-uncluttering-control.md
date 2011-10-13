@@ -30,11 +30,11 @@ Once we have dealt with if, we should do the same thing with while, do-while and
 
 do-while is easy. Simply do the following:
 
-1. Allow
+1.  Allow
 
         do expression while expression
 
-as syntax (i.e. drop the required parentheses around the condition).
+    as syntax (i.e. drop the required parentheses around the condition).
 
 While loops and for loops are more tricky. 
 
@@ -46,13 +46,11 @@ For while loops:
 
         while expression do expression
 
-    as syntax.
+    as syntax.We then have to deal with an ambiguity: What should we do with
 
-We then have to deal with an ambiguity: What should we do with
+        while (expression1) do expression2 while (expression3)
 
-    while (expression1) do expression2 while (expression3)
-
-? I.e. a `do-while` loop inside an old-style `while` loop? Here’s a possible migration strategy.
+    ? I.e. a `do-while` loop inside an old-style `while` loop? Here’s a possible migration strategy.
 
 2.  In Scala 2.10:  Introduce     
 
