@@ -15,7 +15,9 @@ So, here is the proposal (for Scala 2.10):
 
 2.  Allow the following alternative syntax form:
 
+        {% highlight scala %}
         if expression then expression [else expression]
+        {% endhighlight %}
 
 3.  At some point in the future (there’s no rush) we could deprecate the form   
 

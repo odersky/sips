@@ -1,6 +1,6 @@
 ---
 layout: sip
-title: Implicit classes
+title: String Interpolation
 ---
 
 This SIP is an embedded google document.
