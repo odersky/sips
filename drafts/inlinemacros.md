@@ -84,6 +84,8 @@ is replaced by `t` if `c == true` and by `e` otherwise.
 selectors and inline patterns. While useful, this would be much harder
 to spec and implement than conditionals.
 
+Inline expressions are rewritten "outside in", that is, in call by name mode.
+
 3. A field selection of an inline class with an inline argument selects the argument: E.g.,
 `new C(42).x` rewrites to `42`.
 
@@ -232,7 +234,7 @@ a list of type
 
     List[(String, Expr[T])]
 
-The type of the macro itself would be
+the type of the macro itself would be
 
     inline List[inline (inline String, T)]
 
