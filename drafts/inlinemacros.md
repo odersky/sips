@@ -43,9 +43,7 @@ has the same type erasure as some other member with the same name.
 
 Used as a class modifier, inline makes a class a value class. So
 
-```scala
-inline class C(val x: Int)
-```
+    inline class C(val x: Int)
 
 is equivalent to:
 
@@ -230,7 +228,7 @@ would be seen inside a macro as
 
 A dual transformation is applied to a macro's result. Normal types are prefixed with `inline` until
 a type is of the form `Expr[T]` in which case it is replaced by `T`. So if a macro body returned
-a list
+a list of type
 
     List[(String, Expr[T])]
 
