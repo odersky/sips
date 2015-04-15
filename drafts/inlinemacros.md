@@ -28,6 +28,10 @@ value and method definitions labeled `inline` are implicitly final; they cannot 
 The previous rule of regarding a `final val` with no explicit type as a compile-time constant
 (inherited from Java) is dropped. Instead we write such `val`s now as `inline`.
 
+Inline fields that do not override anything need not be allocated.  No
+code needs to be generated for an inline value or method that does not
+override anything.
+
 
 ## Inline Reductions
 
@@ -116,22 +120,26 @@ Inline types can specifically not be used as
  - type parameters in `new` expressions or class parents.
 
 
-class C inline (x: Int, y: Int)
+## Inline Overloading Resolution
 
+We have stated that the rewriting is done on typed trees and that references of
+the original tree are kept after the rewrite. There is one exception to this: References to
+overloaded methods are re-computed after the rewrite. So a different alternative might
+be chosen if the argument types after the rewrite are more specific than the method
+parameter types. So, compile-time overloading resolution is essentially multi-method dispatch.
+Here is a scenario where this can be used to support inline infix methods.
 
-Question: How to achieve the following in a hygienic way:
-
+The task here is to define `++` as an infix operator for inline Ints, giving an inline result:
 
     class PlusWrapper(x: Int) {
-      @inline def ++ (y: Int): Int = plus(x, y)
+      inline def ++ (y: Int): Int = plus(x, y)
     }
-    @inline def plus(x: inline Int, y: inine Int): inline Int = x + y
+    inline def plus(x: inline Int, y: inine Int): inline Int = x + y
     def plus(x: Int, y: Int): Int = x + y
 
     inline implicit def plusWrapper(x: inline Int) = new PlusWrapper(x)
 
-
-Without hygiene, we'd have
+================
 
     x, y: Int
 
