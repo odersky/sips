@@ -42,9 +42,11 @@ has the same type erasure as some other member with the same name.
 ## Inline Classes
 
 Used as a class modifier, inline makes a class a value class. So
+
     ```scala
     inline class C(val x: Int)
     ```
+
 is equivalent to:
 
     class C(val x: Int) extends AnyVal
