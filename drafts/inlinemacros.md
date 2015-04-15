@@ -102,7 +102,7 @@ Then `foo(0)()` expands to `foo(0)(0 + 1)`
 ## Inline Types
 
 We introduce `inline T` as a new form of type. Values of type `inline T` are values
-of type `T` that are statically known to the compiler. Constant types are subtypes
+of type `T` that are statically known to the compiler _at the point where the containing code is expanded_. Constant types are subtypes
 of inline types, and inline types are subtypes of their underlying types. E.g.
 
     42  <:  inline Int  <:  Int
@@ -146,7 +146,7 @@ positions:
 
  - As the type of a type ascription:
 
-       (42: inline Int)
+        (42: inline Int)
 
 Inline types can specifically not be used as
 
@@ -171,7 +171,7 @@ give an inline result if and only if its two operands are inline values. Here's 
     inline implicit class PlusWrapper(val x: Int) {
       inline def ++ (y: Int): Int = plus(this.x, y)
     }
-    inline def plus(x: inline Int, y: inine Int): inline Int = x + y
+    inline def plus(x: inline Int, y: inline Int): inline Int = x + y
     def plus(x: Int, y: Int): Int = x + y
 
 Let's assume we have
@@ -196,21 +196,17 @@ Note that the call to `plus` in `PlusWrapper` resolves statically to the non-inl
 Yet in the last-but-one expression of the above rewrite sequence it is rewritten to refer to the
 inline method `plus` because at that point both arguments are known to be inline values.
 
-## Inline Exprs
-
-We allow
-
 
 ## Macros
 
 A macro is an expression of the form
 
-    macro `{ ... }`
+    macro { ... }
 
 where `{ ... }` is some block of Scala code. (In fact, `macro` may prefix arbitrary expressions,
 but blocks are used most commonly). Macros may only appear in the bodies of inline methods.
 
-Macros can only reference the following things:
+Macros can only reference the following things in their environment:
 
  1. parameters of enclosing inline methods (where the parameter may, or may not be, marked inline),
  2. inline values,
@@ -234,11 +230,11 @@ A dual transformation is applied to a macro's result. Normal types are prefixed 
 a type is of the form `Expr[T]` in which case it is replaced by `T`. So if a macro body returned
 a list
 
-   List[(String, Expr[T])]
+    List[(String, Expr[T])]
 
 The type of the macro itself would be
 
-   inline List[inline (inline String, T)]
+    inline List[inline (inline String, T)]
 
 ## Whitebox vs Black Box
 
