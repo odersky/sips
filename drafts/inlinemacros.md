@@ -72,7 +72,7 @@ the prefix and argument expressions are substituted as they are, so
 any side effects might be duplicated, reordered, or omitted, depending on
 where expressions are used in the method body.
 
-The rewriting is done on typed trees. Any references from the function
+   The rewriting is done on typed trees. Any references from the function
 body to its environment will be kept in the rewritten code. Accessors
 will be added as needed to ensure that private definitions can be
 accessed from the callsite.
@@ -80,7 +80,7 @@ accessed from the callsite.
 2. A conditional expression `if (c) t else e` where `c` has type `inline Boolean`
 is replaced by `t` if `c == true` and by `e` otherwise.
 
-Note: We might also decide reduce `match` expressions with inline
+   Note: We might also decide reduce `match` expressions with inline
 selectors and inline patterns. While useful, this would be much harder
 to spec and implement than conditionals.
 
