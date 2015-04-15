@@ -82,11 +82,13 @@ of inline types, and inline types are subtypes of their underlying types. E.g.
 The usage of inline types is restricted. Inline types can only appear in the following
 positions:
 
- - As parameter or result type of an inline method
+ - As parameter or result type of an inline or abstract method
 
         inline def square(x: inline: Int): inline Int = ...
 
         inline def power(x: Int, n: inline Int): Int = ...
+
+        def length: inline Int
 
  - As type of an inline val -- in fact it is automatically inferred there, i.e.
 
@@ -96,7 +98,6 @@ positions:
 
         inline val x: inline T = E
 
- - As a parameter type of an inline class
  - As the right hand side of an (unparameterized) type alias:
 
         type IS = inline String
