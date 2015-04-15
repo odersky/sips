@@ -1,12 +1,13 @@
 ---
 layout: sip
-title: Inline and Macros
+title: Inline Definitions and Macros
 ---
 
 __Martin Odersky__
 
 __April 2015__
 
+# Inline Definitions and Macros
 
 ## Motivation ##
 
