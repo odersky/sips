@@ -140,7 +140,7 @@ positions:
 
         inline List[inline Int]
 
-        (inline Int, inline Int) => inline Boolean
+        inline ((inline Int, inline Int) => inline Boolean)
 
  - As a refinement type of another inline type:
 
