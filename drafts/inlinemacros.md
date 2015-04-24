@@ -29,7 +29,7 @@ write such `val`s now as `inline`.  Inline values can be defined
 anywhere, but inline methods must be members of a class, trait or
 object.
 
-Value and method definitions labeled `inline` are implicitly final;
+Value and method definitions labeled `inline` are effectively final;
 they cannot be overridden.  Inline members also never override other
 members. Instead, every inline member becomes an overloaded alternative
 of all other members with the same name. Normal overloading resolution
@@ -95,20 +95,21 @@ is replaced by `t` if `c == true` and by `e` otherwise.
 selectors and inline patterns. While useful, this would be much harder
 to spec and implement than conditionals.
 
-Inline expressions are rewritten "outside in", that is, in call by name mode.
-
 3. A field selection of an inline class with an inline argument selects the argument: E.g.,
 `new C(42).x` rewrites to `42`.
 
+Inline expressions are rewritten "outside in".
+
+
 ## Inline Default Arguments
 
-A default argument for any method may be marked `inline`. In that case,
-the argument expression is supplied directly at the call site instead of
-being packed in a default method.
+A default argument for an effectively final method may be marked `inline`. In that case,
+the argument expression is supplied directly at the call site, If the method does not
+override any other method, the usual generation of a "default method" can be omitted.
 
 Example: Given
 
-     def foo(x: Int)(y: Int = inline x + 1) = ...
+     final def foo(x: Int)(y: Int = inline x + 1) = ...
 
 Then `foo(0)()` expands to `foo(0)(0 + 1)`
 
