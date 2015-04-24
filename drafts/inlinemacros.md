@@ -65,12 +65,23 @@ is equivalent to
 The compiler will do the following rewritings.
 
 1. If `prefix.f[Ts](args1)...(argsN)` refers to a full applied inline
-method, replace the expression with the method's right hand side,
-where parameter references are replaced by corresponding arguments and
-references to the enclosing `this` are replaced by `prefix`. Note that
-the prefix and argument expressions are substituted as they are, so
-any side effects might be duplicated, reordered, or omitted, depending on
-where expressions are used in the method body.
+method, where the prefix `prefix` and all arguments `argsI` for by-value
+parameters are side-effect free path expressions, replace the expression 
+with the method's right hand side, where parameter references are replaced 
+by corresponding arguments and references to the enclosing `this` are replaced 
+by `prefix`. 
+
+   If `prefix` is not a side-effect free path, lift it out to
+   
+         val x = prefix; x.f[Ts](args1)...(argsN)
+         
+   and continue with the rewriting. Do the same for all arguments that passed to
+by-value parameters and that are not side-effect free paths. Arguments to by-name
+parameters are left alone.
+
+   These transformation are intended to preserve the semantics
+of function applications under inlining: An  function call should have the same
+semantics independently on whether the function was maked `inline` or not.
 
    The rewriting is done on typed trees. Any references from the function
 body to its environment will be kept in the rewritten code. Accessors
