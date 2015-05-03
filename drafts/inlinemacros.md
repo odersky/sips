@@ -89,10 +89,6 @@ parameters are left alone.
 of function applications under inlining: A function call should have the same
 semantics with respect to side effects independently on whether the function was made `inline` or not.
 
-   After the rewriting is complete, the result of the rewriting is forcibly upcast
-to the type of the original expression. This mechanism works exactly the same 
-as the mechanism of blackbox macro expansion in Scala 2.10+.
-
    The rewriting is done on typed trees. Any references from the function
 body to its environment will be kept in the rewritten code. Accessors
 will be added as needed to ensure that private definitions can be
@@ -125,7 +121,7 @@ of inline types, and inline types are subtypes of their underlying types. E.g.
 
     42  <:  inline Int  <:  Int
 
-    (Float => inline Boolean)  <:  inline ((inline Float) => (inline Boolean)) <:  inline ((inline Float) => Boolean)
+    inline ((Float => inline Boolean))  <:  inline ((inline Float) => (inline Boolean)) <:  inline ((inline Float) => Boolean)
 
 The usage of inline types is restricted. Inline types can only appear in the following
 positions:
@@ -138,7 +134,7 @@ positions:
 
  - As parameter type of an inline class:
 
-        inline class C(inline val x: Int) { ... }
+        inline class C(val x: inline Int) { ... }
 
  - As type of an inline val -- in fact it is automatically inferred there, i.e.
 
@@ -174,6 +170,46 @@ Inline types can specifically not be used as
  - types of parameters to non-inline classes
  - type parameters to methods
  - type parameters in `new` expressions or class parents.
+
+## Inline Overloading Resolution (to be discussed)
+
+We have stated that the rewriting is done on typed trees and that references of
+the original tree are kept after the rewrite. There is one exception to this: References to
+overloaded methods are re-computed after the rewrite. So a different alternative might
+be chosen if the argument types after the rewrite are more specific than the method
+parameter types. So, compile-time overloading resolution is essentially multi-method dispatch.
+Here is a scenario where this can be used to support constant folding inline infix methods.
+
+The task here is to define `++` as an infix operator for inline Ints, which should
+give an inline result if and only if its two operands are inline values. Here's how it can be achieved:
+
+    inline implicit class PlusWrapper(val x: Int) {
+      inline def ++ (y: Int): Int = plus(this.x, y)
+    }
+    inline def plus(x: inline Int, y: inline Int): inline Int = x + y
+    def plus(x: Int, y: Int): Int = x + y
+
+Let's assume we have
+
+    a, b: inline Int
+
+Then we rewrite `a ++ b` as follows:
+
+    a ++ b
+    -->
+    PlusWrapper(a).++(b)
+    -->
+    new PlusWrapper(a).++(b)
+    -->
+    plus(new PlusWrapper(a).x, b)
+    -->
+    plus(a, b)
+    -->
+    a + b: inline Int
+
+Note that the call to `plus` in `PlusWrapper` resolves statically to the non-inline method `plus`.
+Yet in the last-but-one expression of the above rewrite sequence it is rewritten to refer to the
+inline method `plus` because at that point both arguments are known to be inline values.
 
 ## Macros
 
@@ -221,7 +257,7 @@ but we are planning to eventually provide alternative ways of enabling the most 
 
 At some point in the compilation pipeline, after typechecking is complete for the entirety of the program, 
 the compiler expands macro expressions outside the bodies of inline values and inline methods.
-When macro expressions code appear inside the aforementioned constructs, 
+When macro expressions appear inside the aforementioned constructs,
 they will be ignored by the macro expander and processed by the compiler as usual.
 
 A macro expression is expanded by evaluating its body and replacing the original expression
@@ -229,7 +265,3 @@ with an expression that represents the result of the evaluation.
 The implementation is responsible for instantiating a `scala.meta.macros.Context` necessary for macro bodies
 to evaluate and for converting between its internal representation for program elements and representations
 defined in `scala.meta`, such as `scala.meta.Term` and `scala.meta.Type`.
-
-After the expansion is complete, the result of the expansion is forcibly upcast
-to the type of the original expression. This mechanism works exactly the same 
-as the mechanism of blackbox macro expansion in Scala 2.10+.
