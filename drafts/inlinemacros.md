@@ -39,7 +39,7 @@ the result type gets inferred according to the usual rules.
 
 Inline definitions only exist at compile time; no storage is allocated for them in object layout
 and no code is generated for them in object method tables.
-That means that it is OK to have an inline member that 
+That means that it is OK to have an inline member that
 has the same type erasure as some other member with the same name.
 
 ## Inline Classes
@@ -72,15 +72,15 @@ they will be ignored by the inliner and processed by the compiler as usual.
 
 1. If `prefix.f[Ts](args1)...(argsN)` refers to a fully applied inline
 method, where the prefix `prefix` and all arguments `argsI` for by-value
-parameters are side-effect free path expressions or values of inline types, 
-replace the expression with the method's right-hand side, where parameter references are replaced 
-by corresponding arguments and references to the enclosing `this` are replaced 
-by `prefix`. 
+parameters are side-effect free path expressions or values of inline types,
+replace the expression with the method's right-hand side, where parameter references are replaced
+by corresponding arguments and references to the enclosing `this` are replaced
+by `prefix`.
 
    If `prefix` is not a side-effect free path or a value of inline type, lift it out to
-   
+
          val x = prefix; x.f[Ts](args1)...(argsN)
-         
+
    and continue with the rewriting. Do the same for all arguments that passed to
 by-value parameters and that are not side-effect free paths. Arguments to by-name
 parameters are left alone.
@@ -96,7 +96,7 @@ accessed from the callsite.
 
    The rewriting is done in the "outside in" style, i.e. calls to inline methods
 are expanded before possible calls to inline methods in their prefixes and arguments.
-This is different from how the "inside out" style of macro expansion in Scala 2.10+, 
+This is different from how the "inside out" style of macro expansion in Scala 2.10+,
 where prefixes and arguments are expanded first. The old style of macro expansion
 can, if necessary, be emulated by the new style of inline rewritings.
 
@@ -218,11 +218,11 @@ A macro expression is an expression of the form
     macro { ... }
 
 where `{ ... }` is some block of Scala code, called macro body. (In fact, `macro` may prefix arbitrary expressions,
-but blocks are used most commonly). 
+but blocks are used most commonly).
 
-In a macro expression, `macro` stands for a function 
+In a macro expression, `macro` stands for a function
 `def macro[T](body: implicit scala.meta.macros.Context => scala.meta.Term[T]): T = ???` declared in `scala.Predef`.
-Description of the functionality exposed by the `scala.meta` metaprogramming library 
+Description of the functionality exposed by the `scala.meta` metaprogramming library
 is outside of the scope of this proposal.
 
 Macro expressions can appear both in the bodies of inline methods
@@ -239,8 +239,8 @@ Macro bodies can only reference the following names in their environment:
  6. anything that's global (i.e. a class/trait/object without an outer reference).
 
 Names referenced in macro bodies undergo certain changes. References to inline and global definitions are left untouched,
-but local terms of type `T` are transformed into terms of type `scala.meta.Term[T]`, 
-and local types `U` are transformed into terms of type `scala.meta.Type`. In other words, 
+but local terms of type `T` are transformed into terms of type `scala.meta.Term[T]`,
+and local types `U` are transformed into terms of type `scala.meta.Type`. In other words,
 definitions that are statically available outside macro bodies remain available in macro bodies,
 whereas term and type parameters of enclosing inline methods become available as their representations.
 
@@ -248,7 +248,7 @@ whereas term and type parameters of enclosing inline methods become available as
 
 During typechecking, the compiler treats macro expressions, i.e. invocations of `Predef.macro`,
 as normal method calls, typechecking macro bodies and performing type inference if necessary, but nothing else.
-In this proposal, macro expansion works differently from macro expansion in Scala 2.10+, 
+In this proposal, macro expansion works differently from macro expansion in Scala 2.10+,
 where macro applications are expanded immediately after being processed by the typechecker.
 
 An important consequence is that macro expressions cannot refine their types during expansion.
@@ -261,7 +261,7 @@ When macro expressions appear inside inline methods,
 they will be ignored by the macro expander and processed by the compiler as usual.
 
 A macro expression is expanded by evaluating its body and replacing the original expression
-with an expression that represents the result of the evaluation. 
+with an expression that represents the result of the evaluation.
 The implementation is responsible for instantiating a `scala.meta.macros.Context` necessary for macro bodies
 to evaluate and for converting between its internal representation for program elements and representations
 defined in `scala.meta`, such as `scala.meta.Term` and `scala.meta.Type`.
