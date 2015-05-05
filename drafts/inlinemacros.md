@@ -223,9 +223,16 @@ A macro expression is an expression of the form
 where `{ ... }` is some block of Scala code, called macro body. (In fact, `macro` may prefix arbitrary expressions,
 but blocks are used most commonly).
 
-In a macro expression, `macro` stands for a function
-`def macro[T](body: implicit scala.meta.macros.Context => scala.meta.Term[T]): T = ???` declared in `scala.Predef`.
-Description of the functionality exposed by the `scala.meta` metaprogramming library
+In a macro expression, `macro` stands for a function declared in `Predef`:
+
+    def macro[Repr, Result]
+      (body: implicit scala.meta.macros.Context => Repr)
+      (implicit ev: scala.meta.macros.Inversion[Repr, Result]): Result = ???
+
+This signature uses functionality provided by the `scala.meta` metaprogramming library:
+`scala.meta.macros.Context` that defines the reflection API available inside macro bodies
+and `scala.meta.macros.Inversion` that encodes type-level `inline` inversion described below.
+Description of the reflection API exposed by the `scala.meta` metaprogramming library
 is outside of the scope of this proposal.
 
 Macro expressions can appear both in the bodies of inline methods
