@@ -246,6 +246,13 @@ The `scala.meta.macros.Context` implicit value defines the reflection API availa
 and `scala.meta.Term` is one of its members. Full description of the functionality exposed by `scala.meta`
 is outside of the scope of this proposal.
 
+Macro expressions can be used with their type arguments omitted, in which case their type is inferred
+from the type of their bodies according to the `Unmetafy` type function. This is an appealing concept in theory,
+but in reality we have to account for the fact that it is typical to write metaprograms that return untyped
+trees, e.g. `inline def async[T](x: T): T = macro { ...; q"..." }`. In order not to impose unnecessary boilerplate
+on macro authors, we allow that, and in that case we infer the type of the macro expression from its expected type,
+e.g. `T` in the example above.
+
 Macro bodies can only reference the following names in their environment:
 
  1. type parameters of enclosing inline methods and classes/traits containing an enclosing inline method as a member,
