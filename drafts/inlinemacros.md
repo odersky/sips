@@ -71,21 +71,19 @@ When these patterns of code appear inside inline methods,
 they will be ignored by the inliner and processed by the compiler as usual.
 
 1. If `prefix.f[Ts](args1)...(argsN)` refers to a fully applied inline
-method, where the prefix `prefix` and all arguments `argsI` for by-value
-parameters are side-effect free path expressions or values of inline types,
-replace the expression with the method's right-hand side, where parameter references are replaced
-by corresponding arguments and references to the enclosing `this` are replaced
-by `prefix`.
+method, hoist the prefix and the arguments into temporary variables
+and then replace the expression the method's right-hand side,
+where parameter references are replaced by references to temporary variables
+created for the corresponding arguments and references to the enclosing `this`
+are replaced by references to the temporary variable created for the prefix.
 
-   If `prefix` is not a side-effect free path or a value of inline type, lift it out to
+    val x$prefix = prefix
+    val x$1 = arg1
+    ...
+    val x$M = argM
+    <f's body with parameter and this references replaced with x$'s>
 
-         val x = prefix; x.f[Ts](args1)...(argsN)
-
-   and continue with the rewriting. Do the same for all arguments that passed to
-by-value parameters and that are not side-effect free paths. Arguments to by-name
-parameters are left alone.
-
-   These transformation are intended to preserve the semantics
+   This hoisting is intended to preserve the semantics
 of function applications under inlining: A function call should have the same
 semantics with respect to side effects independently on whether the function was made `inline` or not.
 
