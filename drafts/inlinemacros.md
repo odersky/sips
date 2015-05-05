@@ -241,11 +241,30 @@ Macro bodies can only reference the following names in their environment:
  5. inline methods,
  6. anything that's global (i.e. a class/trait/object without an outer reference).
 
-Names referenced in macro bodies undergo certain changes. References to inline and global definitions are left untouched,
-but local terms of type `T` are transformed into terms of type `scala.meta.Term[T]`,
-and local types `U` are transformed into terms of type `scala.meta.Type`. In other words,
-definitions that are statically available outside macro bodies remain available in macro bodies,
-whereas term and type parameters of enclosing inline methods become available as their representations.
+Names referenced in macro bodies undergo the following transformation:
+
+ 1. Names that reference global definitions (terms or types) are left untouched.
+ 2. Names that reference local term definitions change their type:
+   * A non-inline type `T` becomes `scala.meta.Term[T]`, the type of terms of type `T`.
+   * An inline type `inline T` becomes `T`.
+   * An inline type with several levels of `inline` are handled analogously. For instance, a term of a type like
+     `inline (inline Int, Boolean) => String` would be seen inside a macro as a term of a type
+     `(Int, scala.meta.Term[Boolean]) => scala.meta.Term[String]`.
+ 3. Names that reference local type definitions become term references of type `scala.meta.Type`.
+
+In other words, definitions that are statically available outside macro bodies remain available in macro bodies,
+term and type parameters of enclosing inline methods become available as their representations,
+and inline values and methods change their type by having `inline` annotations inverted.
+
+A dual transformation is applied to results returned from macro bodies. Normal types are prefixed with `inline` until
+a type is of the form `scala.meta.Term[T]` in which case it is replaced by `T`. So if a macro body returned
+a list of type
+
+    List[(String, scala.meta.Term[T])]
+
+the type of the macro expression itself would be
+
+    inline List[inline (inline String, T)]
 
 ## Macro expansion
 
