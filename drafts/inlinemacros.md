@@ -223,21 +223,28 @@ A macro expression is an expression of the form
 where `{ ... }` is some block of Scala code, called macro body. (In fact, `macro` may prefix arbitrary expressions,
 but blocks are used most commonly).
 
-In a macro expression, `macro` stands for a function declared in `Predef`:
-
-    def macro[Repr, Result]
-      (body: implicit scala.meta.macros.Context => Repr)
-      (implicit ev: scala.meta.macros.Inversion[Repr, Result]): Result = ???
-
-This signature uses functionality provided by the `scala.meta` metaprogramming library:
-`scala.meta.macros.Context` that defines the reflection API available inside macro bodies
-and `scala.meta.macros.Inversion` that encodes type-level `inline` inversion described below.
-Description of the reflection API exposed by the `scala.meta` metaprogramming library
-is outside of the scope of this proposal.
-
 Macro expressions can appear both in the bodies of inline methods
 (then their expansion is going to be deferred until these methods expand) and in normal code
 (in that case, expansion will take place immediately at the place where the macro expression is written).
+
+In a macro expression, `macro` is not a keyword, but a reference to a method
+declared in the `scala.meta` metaprogramming library:
+
+    def macro[Repr, Result]
+      (body: implicit scala.meta.macros.Context => Repr)
+      (implicit ev: scala.meta.macros.Unmetafy[Repr, Result]): Result = ???
+
+The `scala.meta.macros.Unmetafy` type class encodes a type-level function
+that brings types one meta level down:
+  * A type of terms of type T, `scala.meta.Term[T]`, becomes `T`.
+  * A normal type `T` becomes `inline T`.
+  * A normal type with type arguments is handled recursively. So if a macro body returned a list of type
+    `List[(String, scala.meta.Term[T])]`, the type of the macro expression itself would be
+    `inline List[inline (inline String, T)]`.
+
+The `scala.meta.macros.Context` implicit value defines the reflection API available inside macro bodies,
+and `scala.meta.Term` is one of its members. Full description of the functionality exposed by `scala.meta`
+is outside of the scope of this proposal.
 
 Macro bodies can only reference the following names in their environment:
 
@@ -254,10 +261,10 @@ macro expressions have to use the functionality of `scala.meta.macros.Context`.
 Names referenced in macro bodies undergo the following transformation:
 
  1. Names that reference global definitions (terms or types) are left untouched.
- 2. Names that reference local term definitions change their type:
+ 2. Names that reference local term definitions change their type according to the Metafy transformation:
    * A non-inline type `T` becomes `scala.meta.Term[T]`, the type of terms of type `T`.
    * An inline type `inline T` becomes `T`.
-   * An inline type with several levels of `inline` are handled analogously. For instance, a term of a type like
+   * An inline type with several levels of `inline` is handled analogously. For instance, a term of a type like
      `inline (inline Int, Boolean) => String` would be seen inside a macro as a term of a type
      `(Int, scala.meta.Term[Boolean]) => scala.meta.Term[String]`.
  3. Names that reference local type definitions become term references of type `scala.meta.Type`.
@@ -266,25 +273,16 @@ In other words, definitions that are statically available outside macro bodies r
 term and type parameters of enclosing inline methods become available as their representations,
 and inline values and methods change their type by having `inline` annotations inverted.
 
-A dual transformation is applied to results returned from macro bodies. Normal types are prefixed with `inline` until
-a type is of the form `scala.meta.Term[T]` in which case it is replaced by `T`. So if a macro body returned
-a list of type
-
-    List[(String, scala.meta.Term[T])]
-
-the type of the macro expression itself would be
-
-    inline List[inline (inline String, T)]
-
 ## Macro expansion
 
-During typechecking, the compiler treats macro expressions, i.e. invocations of `Predef.macro`,
+During typechecking, the compiler treats macro expressions, i.e. invocations of the `macro` method,
 as normal method calls, typechecking macro bodies and performing type inference if necessary, but nothing else.
 In this proposal, macro expansion works differently from macro expansion in Scala 2.10+,
 where macro applications are expanded immediately after being processed by the typechecker.
 
 An important consequence is that macro expressions cannot refine their types during expansion.
-This makes it impossible to use the proposed macro system to implement [whitebox macros](http://docs.scala-lang.org/overviews/macros/blackbox-whitebox.html) from Scala 2.10+,
+This makes it impossible to use the proposed macro system to implement
+[whitebox macros](http://docs.scala-lang.org/overviews/macros/blackbox-whitebox.html) from Scala 2.10+,
 but we are planning to eventually provide alternative ways of enabling the most important whitebox functionality.
 
 At some point in the compilation pipeline, after typechecking is complete for the entirety of the program,
@@ -292,7 +290,7 @@ the compiler expands macro expressions outside the bodies of inline methods.
 When macro expressions appear inside inline methods,
 they will be ignored by the macro expander and processed by the compiler as usual.
 
-A macro expression is expanded by evaluating its body and replacing the original expression
+A macro expression is expanded by evaluating its body and replacing the original macro expression
 with an expression that represents the result of the evaluation.
 The implementation is responsible for instantiating a `scala.meta.macros.Context` necessary for macro bodies
 to evaluate and for converting between its internal representation for program elements and representations
