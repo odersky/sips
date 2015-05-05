@@ -236,10 +236,13 @@ Macro bodies can only reference the following names in their environment:
 
  1. type parameters of enclosing inline methods and classes/traits containing an enclosing inline method as a member,
  2. terms parameters of enclosing inline methods (where the parameter may, or may not be, marked inline),
- 3. `this` references to classes/traits containing an enclosing inline method as a member,
- 4. inline values,
- 5. inline methods,
- 6. anything that's global (i.e. a class/trait/object without an outer reference).
+ 3. inline values,
+ 4. inline methods,
+ 5. anything that's global (i.e. a class/trait/object without an outer reference).
+
+Notably, macro bodies cannot reference `this` of classes/traits containing an enclosing inline method as a member.
+This means that in order to access the representation of a prefix of the enclosing inline application,
+macro expressions have to use the functionality of `scala.meta.macros.Context`.
 
 Names referenced in macro bodies undergo the following transformation:
 
