@@ -88,9 +88,14 @@ of function applications under inlining: A function call should have the same
 semantics with respect to side effects independently on whether the function was made `inline` or not.
 
    The rewriting is done on typed trees. Any references from the function
-body to its environment will be kept in the rewritten code. Accessors
-will be added as needed to ensure that private definitions can be
-accessed from the callsite.
+body to its environment will be kept in the rewritten code.
+
+  If the result of the rewriting references private/protected definitions
+to the class that defines the inline method, these references will be changed
+to use accessors generated automatically by the compiler. To ensure that the rewriting
+works in the separate compilation setting, it is critical for the compiler to generate
+the accessors in advance. We currently think that it is feasible, because it is always
+possible to detect these references by analyzing the bodies of inline methods.
 
    The rewriting is done in the "outside in" style, i.e. calls to inline methods
 are expanded before possible calls to inline methods in their prefixes and arguments.
