@@ -66,8 +66,8 @@ is equivalent to
 ## Inline Reductions
 
 The compiler will do the following rewritings when encountering certain patterns of code
-outside the bodies of inline values and inline methods.
-When these patterns of code appear inside the aforementioned constructs, 
+outside the bodies of inline methods.
+When these patterns of code appear inside inline methods,
 they will be ignored by the inliner and processed by the compiler as usual.
 
 1. If `prefix.f[Ts](args1)...(argsN)` refers to a fully applied inline
@@ -255,9 +255,9 @@ An important consequence is that macro expressions cannot refine their types dur
 This makes it impossible to use the proposed macro system to implement [whitebox macros](http://docs.scala-lang.org/overviews/macros/blackbox-whitebox.html) from Scala 2.10+,
 but we are planning to eventually provide alternative ways of enabling the most important whitebox functionality.
 
-At some point in the compilation pipeline, after typechecking is complete for the entirety of the program, 
-the compiler expands macro expressions outside the bodies of inline values and inline methods.
-When macro expressions appear inside the aforementioned constructs,
+At some point in the compilation pipeline, after typechecking is complete for the entirety of the program,
+the compiler expands macro expressions outside the bodies of inline methods.
+When macro expressions appear inside inline methods,
 they will be ignored by the macro expander and processed by the compiler as usual.
 
 A macro expression is expanded by evaluating its body and replacing the original expression
