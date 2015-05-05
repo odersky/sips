@@ -1,6 +1,6 @@
 ---
 layout: sip
-title: Inline Definitions and Macros
+title: Inline Definitions and Macro Expressions
 ---
 
 __Martin Odersky__
@@ -8,7 +8,7 @@ __Eugene Burmako__
 
 __April 2015__
 
-# Inline Definitions and Macros
+# Inline Definitions and Macro Expressions
 
 ## Motivation ##
 
@@ -214,7 +214,7 @@ Note that the call to `plus` in `PlusWrapper` resolves statically to the non-inl
 Yet in the last-but-one expression of the above rewrite sequence it is rewritten to refer to the
 inline method `plus` because at that point both arguments are known to be inline values.
 
-## Macros
+## Macro expressions
 
 A macro expression is an expression of the form
 
