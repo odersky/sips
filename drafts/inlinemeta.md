@@ -252,7 +252,8 @@ from the expected type with `Result` becoming equal to the expected type and `Re
 Metafy type function. For example, in `inline def async[T](x: T): T = meta { ...; q"..." }`, inference
 results in `Repr = scala.meta.Expr` and `Result = T`. If a meta expression requires such kind of type inference,
 then it is not allowed to use it in the context where an expected type is unspecified,
-e.g. omitting the return type `T` of the inline method in the example above is prohibited.
+e.g. omitting the return type `T` of the inline method in the example above is prohibited. In that case,
+one could write `inline def async[T](x: T) = meta { ...; q"..." }: T`, making the code valid again.
 
 Meta scopes can only reference the following names in their environment:
 
