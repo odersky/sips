@@ -234,27 +234,25 @@ declared in the `scala.meta` metaprogramming library:
 
     def macro[Repr, Result]
       (body: implicit scala.meta.macros.Context => Repr)
-      (implicit ev: scala.meta.macros.Unmetafy[Repr, Result]): Result = ???
+      (implicit ev: scala.meta.macros.Metafy[Result, Repr]): Result = ???
 
-The `scala.meta.macros.Unmetafy` type class encodes a type-level function
-that brings types one meta level down:
-  * A type of terms of type T, `scala.meta.Term[T]`, becomes `T`.
-  * A normal type `T` becomes `inline T`.
-  * A normal type with type arguments is handled recursively. So if a macro body returned a list of type
-    `List[(String, scala.meta.Term[T])]`, the type of the expression itself would be `inline List[inline (inline String, T)]`.
+The `scala.meta.macros.Metafy` type class encodes a type-level function
+that brings types one meta level up:
+   * A non-inline type `T` becomes `scala.meta.Term`.
+   * An inline type `inline T` becomes `T`.
+   * An inline type with several levels of `inline` is handled analogously. For instance, a type like
+     `inline (inline Int, Boolean) => String` would become `(Int, scala.meta.Term) => scala.meta.Term`.
 
 The `scala.meta.macros.Context` implicit value defines the reflection API available inside macro bodies,
 and `scala.meta.Term` is one of its members. Full description of the functionality exposed by `scala.meta`
 is outside of the scope of this proposal.
 
-Macro expressions can be used with their type arguments omitted, in which case their type is inferred
-from the type of their bodies according to the `Unmetafy` type function. This is an appealing concept in theory,
-but in reality we have to account for the fact that it is typical to write metaprograms that return untyped
-trees, e.g. `inline def async[T](x: T): T = macro { ...; q"..." }`. In order not to impose unnecessary boilerplate
-on macro authors, we allow that, and in that case we infer the type of the macro expression from its expected type,
-e.g. `T` in the example above. If a macro expression requires such kind of type inference, then it is not allowed
-to use it in the context where an expected type is unspecified, e.g. omitting the return type `T` of the inline
-method in the example above is prohibited.
+Macro expressions can be used with their type arguments omitted, in which case the type arguments are inferred
+from the expected type with `Result` becoming equal to the expected type and `Repr` calculated by the
+Metafy type function. For example, in `inline def async[T](x: T): T = macro { ...; q"..." }`, inference
+results in `Repr = scala.meta.Term` and `Result = T`. If a macro expression requires such kind of type inference,
+then it is not allowed to use it in the context where an expected type is unspecified,
+e.g. omitting the return type `T` of the inline method in the example above is prohibited.
 
 Macro bodies can only reference the following names in their environment:
 
@@ -271,12 +269,7 @@ macro expressions have to use the functionality of `scala.meta.macros.Context`.
 Names referenced in macro bodies undergo the following transformation:
 
  1. Names that reference global definitions (terms or types) are left untouched.
- 2. Names that reference local term definitions change their type according to the Metafy transformation:
-   * A non-inline type `T` becomes `scala.meta.Term[T]`, the type of terms of type `T`.
-   * An inline type `inline T` becomes `T`.
-   * An inline type with several levels of `inline` is handled analogously. For instance, a term of a type like
-     `inline (inline Int, Boolean) => String` would be seen inside a macro as a term of a type
-     `(Int, scala.meta.Term[Boolean]) => scala.meta.Term[String]`.
+ 2. Names that reference local term definitions change their type according to the Metafy transformation.
  3. Names that reference local type definitions become term references of type `scala.meta.Type`.
 
 In other words, definitions that are statically available outside macro bodies remain available in macro bodies,
