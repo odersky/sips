@@ -238,19 +238,19 @@ declared in the `scala.meta` metaprogramming library:
 
 The `scala.meta.Metafy` type class encodes a type-level function
 that brings types one meta level up:
-   * A non-inline type `T` becomes `scala.meta.Term`.
+   * A non-inline type `T` becomes `scala.meta.Expr`.
    * An inline type `inline T` becomes `T`.
    * An inline type with several levels of `inline` is handled analogously. For instance, a type like
-     `inline (inline Int, Boolean) => String` would become `(Int, scala.meta.Term) => scala.meta.Term`.
+     `inline (inline Int, Boolean) => String` would become `(Int, scala.meta.Expr) => scala.meta.Expr`.
 
 The `scala.meta.semantic.Context` implicit value defines the reflection API available inside meta scopes,
-and `scala.meta.Term` is one of its members. Full description of the functionality exposed by `scala.meta`
+and `scala.meta.Expr` is one of its members. Full description of the functionality exposed by `scala.meta`
 is outside of the scope of this proposal.
 
 Meta expressions can be used with their type arguments omitted, in which case the type arguments are inferred
 from the expected type with `Result` becoming equal to the expected type and `Repr` calculated by the
 Metafy type function. For example, in `inline def async[T](x: T): T = meta { ...; q"..." }`, inference
-results in `Repr = scala.meta.Term` and `Result = T`. If a meta expression requires such kind of type inference,
+results in `Repr = scala.meta.Expr` and `Result = T`. If a meta expression requires such kind of type inference,
 then it is not allowed to use it in the context where an expected type is unspecified,
 e.g. omitting the return type `T` of the inline method in the example above is prohibited.
 
@@ -298,4 +298,4 @@ A meta expression is expanded by evaluating its body and replacing the original 
 with an expression that represents the result of the evaluation.
 The implementation is responsible for instantiating a `scala.meta.semantic.Context` necessary for meta scopes
 to evaluate and for converting between its internal representation for program elements and representations
-defined in `scala.meta`, such as `scala.meta.Term` and `scala.meta.Type`.
+defined in `scala.meta`, such as `scala.meta.Expr` and `scala.meta.Type`.
