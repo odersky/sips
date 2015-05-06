@@ -3,8 +3,12 @@ layout: sip
 title: Inline Definitions and Meta Expressions
 ---
 
-__Martin Odersky__
 __Eugene Burmako__
+__Sébastien Doeraene__
+__Vojin Jovanovic__
+__Martin Odersky__
+__Dmitry Petrashko__
+__Denys Shabalin__
 
 __April 2015__
 
