@@ -117,12 +117,11 @@ This is different from how the "inside out" style of macro expansion in Scala 2.
 where prefixes and arguments are expanded first. The old style of macro expansion
 can, if necessary, be emulated by the new style of inline rewritings.
 
-    The rewriting also verifies that arguments passed to inline parameters are constants,
-i.e. language literals or calls to constructors of inline classes. It is an error if that
-does not hold. However, specification of rules for constant folding is outside the scope of this proposal.
-We believe that, with additional effort, inline methods and inline parameters can be used
-to express partial evaluation of methods like `pow` in the introduction, but for now
-we rely on implementation-specific constant folding to take care of things like arithmetic
+    The rewriting also verifies that arguments passed to inline parameters are literals.
+It is an error if that does not hold. However, specification of rules for constant folding
+is outside the scope of this proposal. We believe that, with additional effort, inline methods and
+inline parameters can be used to express partial evaluation of methods like `pow` in the introduction,
+but for now we rely on implementation-specific constant folding to take care of things like arithmetic
 operation on constants, conditional expressions with constant conditions and so on.
 
 3. If `prefix.f[Ts](args1)...(argsN)` refers to a partially applied inline
