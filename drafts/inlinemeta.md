@@ -159,25 +159,21 @@ then it is not allowed to use it in the context where an expected type is unspec
 e.g. omitting the return type `T` of the inline method in the example above is prohibited. In that case,
 one could write `inline def async[T](x: T) = meta { ...; q"..." }: T`, making the code valid again.
 
-Meta scopes can only reference the following names in their environment:
+Meta scopes can only reference the following names in their environment,
+with the types of the names undergoing the following transformations:
 
- 1. type parameters of enclosing inline methods and classes/traits containing an enclosing inline method as a member,
- 2. term parameters of enclosing inline methods (where the parameter may, or may not be, marked inline),
- 3. `this` references to classes/traits containing an enclosing inline method as a member,
- 4. inline values,
- 5. inline methods,
- 6. anything that's global (i.e. a class/trait/object without an outer reference).
-
-Names referenced in meta scopes undergo the following transformation:
-
- 1. Names that reference global definitions (terms or types) are left untouched.
- 2. Names that reference inline definitions are left untouched as well.
- 3. Names that reference local term definitions or `this` change their type to `scala.meta.Expr`.
- 4. Names that reference local type definitions become term references of type `scala.meta.Type`.
+| Definition                         | Type |
+|------------------------------------------------------------------------------------------------------------------|---|
+| Inline value                       | Unchanged  |
+| Inline method                      | Types of inline params unchanged,<br/>types of non-inline parameters</br> and return type changed to `scala.meta.Expr`  |
+| Inline parameter                   | Unchanged  |
+| Type parameter of an inline method | `scala.meta.Type`  |
+| Term parameter of an inline method | `scala.meta.Expr`  |
+| Global                             | Unchanged |
 
 In other words, definitions that are statically available outside meta scopes remain available in meta scopes,
-term and type arguments of enclosing inline methods become available as their representations,
-and inline values and methods change their type by having `inline` annotations inverted.
+term and type arguments of inline methods become available as their representations,
+while signatures of inline methods are recursively transformed according to the rules above.
 
 As a consequence of how inline reductions work, by-value term parameters of encloding inline methods
 will be passed to macro scopes as trees representing references to temporary variables generated to
