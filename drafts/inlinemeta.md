@@ -129,7 +129,9 @@ Meta expressions can appear both in the bodies of inline methods
 In a meta expression, `meta` is not a keyword, but a reference to a method
 declared in the `scala.meta` metaprogramming library:
 
-    def meta[Result](body: implicit scala.meta.semantic.Context => scala.meta.Expr): Result = ???
+    package object meta {
+      def apply[Result](body: implicit scala.meta.semantic.Context => scala.meta.Expr): Result = ???
+    }
 
 The `scala.meta.semantic.Context` implicit value defines the reflection API available inside meta scopes,
 and `scala.meta.Expr` is one of its members. Full description of the functionality exposed by `scala.meta`
