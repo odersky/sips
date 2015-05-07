@@ -90,6 +90,7 @@ are replaced by references to the temporary variable created for the prefix.
    This hoisting is intended to preserve the semantics
 of method applications under inlining. A method call should have the same
 semantics with respect to side effects independently on whether the method was made `inline` or not.
+If an inline method has by-name parameters, then corresponding arguments are not hoisted.
 
    The rewriting is done on typed trees. Any references from the method
 body to its environment will be kept in the rewritten code.
