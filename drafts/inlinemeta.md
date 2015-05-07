@@ -74,9 +74,11 @@ outside the bodies of inline methods.
 When these patterns of code appear inside inline methods,
 they will be ignored by the inliner and processed by the compiler as usual.
 
-1. If `prefix.f[Ts](args1)...(argsN)` refers to a fully applied inline
+1. If `prefix.v` refers to an inline value, replace the expression with the value of `v`.
+
+2. If `prefix.f[Ts](args1)...(argsN)` refers to a fully applied inline
 method, hoist the prefix and the arguments into temporary variables
-and then replace the expression the method's right-hand side,
+and then replace the expression with the method's right-hand side,
 where parameter references are replaced by references to temporary variables
 created for the corresponding arguments and references to the enclosing `this`
 are replaced by references to the temporary variable created for the prefix.
@@ -108,7 +110,7 @@ This is different from how the "inside out" style of macro expansion in Scala 2.
 where prefixes and arguments are expanded first. The old style of macro expansion
 can, if necessary, be emulated by the new style of inline rewritings.
 
-2. If `prefix.f[Ts](args1)...(argsN)` refers to a partially applied inline
+3. If `prefix.f[Ts](args1)...(argsN)` refers to a partially applied inline
 method, an error is raised. Eta expansion of inline methods is prohibited.
 
 ## Meta Expressions
