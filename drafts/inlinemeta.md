@@ -263,14 +263,11 @@ one could write `inline def async[T](x: T) = meta { ...; q"..." }: T`, making th
 Meta scopes can only reference the following names in their environment:
 
  1. type parameters of enclosing inline methods and classes/traits containing an enclosing inline method as a member,
- 2. terms parameters of enclosing inline methods (where the parameter may, or may not be, marked inline),
- 3. inline values,
- 4. inline methods,
- 5. anything that's global (i.e. a class/trait/object without an outer reference).
-
-Notably, meta scopes cannot reference `this` of classes/traits containing an enclosing inline method as a member.
-This means that in order to access the representation of a prefix of the enclosing inline application,
-meta expressions have to use the functionality of `scala.meta.semantic.Context`.
+ 2. term parameters of enclosing inline methods (where the parameter may, or may not be, marked inline),
+ 3. `this` references to classes/traits containing an enclosing inline method as a member,
+ 4. inline values,
+ 5. inline methods,
+ 6. anything that's global (i.e. a class/trait/object without an outer reference).
 
 Names referenced in meta scopes undergo the following transformation:
 
@@ -279,8 +276,16 @@ Names referenced in meta scopes undergo the following transformation:
  3. Names that reference local type definitions become term references of type `scala.meta.Type`.
 
 In other words, definitions that are statically available outside meta scopes remain available in meta scopes,
-term and type parameters of enclosing inline methods become available as their representations,
+term and type arguments of enclosing inline methods become available as their representations,
 and inline values and methods change their type by having `inline` annotations inverted.
+
+As a consequence of how inline reductions work, by-value term parameters of encloding inline methods
+will be passed to macro scopes as trees representing references to temporary variables generated to
+respect by-value semantics. In order for a macro scope to get access to representations of
+actual arguments of an enclosing inline method, corresponding parameters need to be declared as by-name,
+e.g. `inline def async[T](x: => T): T = meta { ... }`. A representation of a `this` reference always
+follows the by-value scheme, and in order to obtain an actual prefix of an enclosing inline application,
+one should use the functionality of `scala.meta.semantic.Context`.
 
 ## Meta Expansion
 
