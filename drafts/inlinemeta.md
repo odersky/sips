@@ -88,10 +88,10 @@ are replaced by references to the temporary variable created for the prefix.
         <f's body with parameter and this references replaced with x$'s>
 
    This hoisting is intended to preserve the semantics
-of function applications under inlining. A function call should have the same
-semantics with respect to side effects independently on whether the function was made `inline` or not.
+of method applications under inlining. A method call should have the same
+semantics with respect to side effects independently on whether the method was made `inline` or not.
 
-   The rewriting is done on typed trees. Any references from the function
+   The rewriting is done on typed trees. Any references from the method
 body to its environment will be kept in the rewritten code.
 
   If the result of the rewriting references private/protected definitions
