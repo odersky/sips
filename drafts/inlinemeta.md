@@ -28,6 +28,13 @@ We introduce a new reserved word: `inline`. `inline` can be used as a modifier f
 
         inline def square(x: Double) = x * x
 
+ - parameters of inline methods, e.g.
+
+        inline def pow(b: Double, inline n: Int): Double = {
+          if (n == 0) 1
+          else pow(b, n - 1)
+        }
+
 The previous rule of regarding a `final val` with no explicit type as
 a compile-time constant (inherited from Java) is dropped. Instead we
 write such `val`s now as `inline`.
@@ -110,6 +117,14 @@ This is different from how the "inside out" style of macro expansion in Scala 2.
 where prefixes and arguments are expanded first. The old style of macro expansion
 can, if necessary, be emulated by the new style of inline rewritings.
 
+    The rewriting also verifies that arguments passed to inline parameters are constants,
+i.e. language literals or calls to constructors of inline classes. It is an error if that
+does not hold. However, specification of rules for constant folding is outside the scope of this proposal.
+We believe that, with additional effort, inline methods and inline parameters can be used
+to express partial evaluation of methods like `pow` in the introduction, but for now
+we rely on implementation-specific constant folding to take care of things like arithmetic
+operation on constants, conditional expressions with constant conditions and so on.
+
 3. If `prefix.f[Ts](args1)...(argsN)` refers to a partially applied inline
 method, an error is raised. Eta expansion of inline methods is prohibited.
 
@@ -126,7 +141,7 @@ Meta expressions can appear both in the bodies of inline methods
 (then their expansion is going to be deferred until these methods expand) and in normal code
 (in that case, expansion will take place immediately at the place where the meta expression is written).
 
-In a meta expression, `meta` is not a keyword, but a reference to a method
+In a meta expression, `meta` is not a keyword, but a reference to a magic method
 declared in the `scala.meta` metaprogramming library:
 
     package object meta {
@@ -147,7 +162,7 @@ one could write `inline def async[T](x: T) = meta { ...; q"..." }: T`, making th
 Meta scopes can only reference the following names in their environment:
 
  1. type parameters of enclosing inline methods and classes/traits containing an enclosing inline method as a member,
- 2. term parameters of enclosing inline methods,
+ 2. term parameters of enclosing inline methods (where the parameter may, or may not be, marked inline),
  3. `this` references to classes/traits containing an enclosing inline method as a member,
  4. inline values,
  5. inline methods,
@@ -156,7 +171,7 @@ Meta scopes can only reference the following names in their environment:
 Names referenced in meta scopes undergo the following transformation:
 
  1. Names that reference global definitions (terms or types) are left untouched.
- 2. Names that reference inline members are left untouched as well.
+ 2. Names that reference inline definitions are left untouched as well.
  3. Names that reference local term definitions or `this` change their type to `scala.meta.Expr`.
  4. Names that reference local type definitions become term references of type `scala.meta.Type`.
 
