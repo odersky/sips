@@ -144,7 +144,7 @@ In a meta expression, `meta` is not a keyword, but a reference to a magic method
 declared in the `scala.meta` metaprogramming library:
 
     package object meta {
-      def apply[Result](body: implicit scala.meta.semantic.Context => scala.meta.Expr): Result = ???
+      def apply[Result](body: implicit scala.meta.semantic.Context => Any): Result = ???
     }
 
 The `scala.meta.semantic.Context` implicit value defines the reflection API available inside meta scopes,
@@ -181,6 +181,11 @@ actual arguments of an enclosing inline method, corresponding parameters need to
 e.g. `inline def async[T](x: => T): T = meta { ... }`. A representation of a `this` reference always
 follows the by-value scheme, and in order to obtain an actual prefix of an enclosing inline application,
 one should use the functionality of `scala.meta.semantic.Context`.
+
+Meta scopes can return anything that is convertible to `scala.meta.Expr` by the means
+of the `scala.meta.Lift` type class. There are standard instances of the type class that lift simple values
+to literals as well as ones that support frequently used collections of liftable values.
+Metaprogrammers may define and use their own instances as long as they are available in corresponding meta scopes.
 
 ## Meta Expansion
 
