@@ -161,13 +161,14 @@ one could write `inline def async[T](x: T) = meta { ...; q"..." }: T`, making th
 Meta scopes can only reference the following names in their environment,
 with the types of the names undergoing the following transformations:
 
-| Definition                         | Type |
-|------------------------------------------------------------------------------------------------------------------|---|
-| Inline value                       | Unchanged  |
-| Inline method                      | Types of inline params unchanged,<br/>types of non-inline parameters</br> and return type changed to `scala.meta.Expr`  |
+| Definition                                | Type |
+|-------------------------------------------|------|
+| Inline value                       | Unchanged |
+| Inline method                      | Types of inline params unchanged,<br/>types of non-inline parameters</br> and return type changed to `scala.meta.Expr` |
 | Inline parameter                   | Unchanged  |
-| Type parameter of an inline method | `scala.meta.Type`  |
-| Term parameter of an inline method | `scala.meta.Expr`  |
+| Type parameter of an inline method | `scala.meta.Type` |
+| Term parameter of an inline method | `scala.meta.Expr` |
+| Enclosing this                     | `scala.meta.Expr` |
 | Global                             | Unchanged |
 
 In other words, definitions that are statically available outside meta scopes remain available in meta scopes,
