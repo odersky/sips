@@ -87,14 +87,14 @@ they will be ignored by the inliner and processed by the compiler as usual.
 method, hoist the prefix and the arguments into temporary variables
 and then replace the expression with the method's right-hand side,
 where parameter references are replaced by references to temporary variables
-created for the corresponding arguments and references to the enclosing `this`
+created for the corresponding arguments and enclosing `this` and self references
 are replaced by references to the temporary variable created for the prefix.
 
         val x$prefix = prefix
         val x$1 = arg1
         ...
         val x$M = argM
-        <f's body with parameter and this references replaced with x$'s>
+        <f's body with parameter and this/self references replaced with x$'s>
 
    This hoisting is intended to preserve the semantics
 of method applications under inlining. A method call should have the same
@@ -168,7 +168,7 @@ with the types of the names undergoing the following transformations:
 | Inline parameter                   | Unchanged  |
 | Type parameter of an inline method | `scala.meta.Type` |
 | Term parameter of an inline method | `scala.meta.Expr` |
-| Enclosing this                     | `scala.meta.Expr` |
+| Enclosing this and self references | `scala.meta.Expr` |
 | Global                             | Unchanged |
 
 In other words, definitions that are statically available outside meta scopes remain available in meta scopes,
@@ -179,7 +179,7 @@ As a consequence of how inline reductions work, by-value term parameters of encl
 will be passed to macro scopes as trees representing references to temporary variables generated to
 respect by-value semantics. In order for a macro scope to get access to representations of
 actual arguments of an enclosing inline method, corresponding parameters need to be declared as by-name,
-e.g. `inline def async[T](x: => T): T = meta { ... }`. A representation of a `this` reference always
+e.g. `inline def async[T](x: => T): T = meta { ... }`. A representation of a `this` or self reference always
 follows the by-value scheme, and in order to obtain an actual prefix of an enclosing inline application,
 one should use the functionality of `scala.meta.semantic.Context`.
 
