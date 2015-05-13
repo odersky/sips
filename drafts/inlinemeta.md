@@ -147,9 +147,8 @@ declared in the `scala.meta` metaprogramming library:
       def apply[Result](body: implicit scala.meta.semantic.Context => Any): Result = ???
     }
 
-The `scala.meta.semantic.Context` implicit value defines the reflection API available inside meta scopes,
-and `scala.meta.Expr` is one of its members. Full description of the functionality exposed by `scala.meta`
-is outside of the scope of this proposal.
+The `scala.meta.semantic.Context` implicit value defines the reflection API available inside meta scopes.
+Full description of the functionality exposed by `scala.meta` is outside of the scope of this proposal.
 
 Meta expressions can be used with their type arguments omitted, in which case the type argument
 is inferred from the expected type. For example, in `inline def async[T](x: T): T = meta { ...; q"..." }`, inference
@@ -164,11 +163,11 @@ with the types of the names undergoing the following transformations:
 | Definition                                | Type |
 |-------------------------------------------|------|
 | Inline value                       | Unchanged |
-| Inline method                      | Types of inline params unchanged,<br/>types of non-inline parameters</br> and return type changed to `scala.meta.Expr` |
+| Inline method                      | Types of inline params unchanged,<br/>types of non-inline parameters</br> and return type changed to `scala.meta.Term` |
 | Inline parameter                   | Unchanged  |
 | Type parameter of an inline method | `scala.meta.Type` |
-| Term parameter of an inline method | `scala.meta.Expr` |
-| Enclosing this and self references | `scala.meta.Expr` |
+| Term parameter of an inline method | `scala.meta.Term` |
+| Enclosing this and self references | `scala.meta.Term` |
 | Global                             | Unchanged |
 
 In other words, definitions that are statically available outside meta scopes remain available in meta scopes,
@@ -183,7 +182,7 @@ e.g. `inline def async[T](x: => T): T = meta { ... }`. A representation of a `th
 follows the by-value scheme, and in order to obtain an actual prefix of an enclosing inline application,
 one should use the functionality of `scala.meta.semantic.Context`.
 
-Meta scopes can return anything that is convertible to `scala.meta.Expr` by the means
+Meta scopes can return anything that is convertible to `scala.meta.Term` by the means
 of the `scala.meta.Lift` type class. There are standard instances of the type class that lift simple values
 to literals as well as ones that support frequently used collections of liftable values.
 Metaprogrammers may define and use their own instances as long as they are available in corresponding meta scopes.
@@ -210,4 +209,4 @@ A meta expression is expanded by evaluating its body and replacing the original 
 with an expression that represents the result of the evaluation.
 The implementation is responsible for instantiating a `scala.meta.semantic.Context` necessary for meta scopes
 to evaluate and for converting between its internal representation for program elements and representations
-defined in `scala.meta`, such as `scala.meta.Expr` and `scala.meta.Type`.
+defined in `scala.meta`, such as `scala.meta.Term` and `scala.meta.Type`.
