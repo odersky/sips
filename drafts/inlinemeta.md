@@ -53,27 +53,6 @@ and no code is generated for them in object method tables.
 That means that it is OK to have an inline member that
 has the same type erasure as some other member with the same name.
 
-## Inline Classes
-
-Used as a class modifier, inline makes a class a value class. So
-
-    inline class C(val x: Int)
-
-is equivalent to:
-
-    class C(val x: Int) extends AnyVal
-
-In fact we consider deprecating the second syntax.
-
-Used for an implicit class, inline applies to both the class and the constructor method. So,
-
-    inline implicit class Decorator(val x: T) { ... }
-
-is equivalent to
-
-    inline class Decorator(x: T) { ... }
-    inline implicit def Decorator(x: T): Decorator = new Decorator(x)
-
 ## Inline Reductions
 
 The compiler will do the following rewritings when encountering certain patterns of code
