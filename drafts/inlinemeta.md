@@ -153,7 +153,7 @@ In other words, definitions that are statically available outside meta scopes re
 term and type arguments of inline methods become available as their representations,
 while signatures of inline methods are recursively transformed according to the rules above.
 
-As a consequence of how inline reductions work, by-value term parameters of encloding inline methods
+As a consequence of how inline reductions work, by-value term parameters of enclosing inline methods
 will be passed to macro scopes as trees representing references to temporary variables generated to
 respect by-value semantics. In order for a macro scope to get access to representations of
 actual arguments of an enclosing inline method, corresponding parameters need to be declared as by-name,
