@@ -59,6 +59,28 @@ This means that in the example above the expression `e` is evaluated before the 
 
 the evaluation order would be `e1`, initializer of `T`, `e2`, initializer of `V`.
 
+## Interaction with Other Features ##
+
+### Modifiers
+
+Trait parameters accept the same modifiers as class parameters, with the same meaning. 
+
+### Context bounds
+
+Context bounds on type parameters of traits are allowed and map to implicit evidence arguments as usual.
+
+### Implicit parameters
+
+Traits allow implicit arguments either directly, or indirectly by expansion from a context bound. Implicit
+arguments to such parameters are passed whenever the resulting program would be otherwise illegal. This means:
+
+ - If a trait takes normal parameters before implicit parameters, and arguments for normal
+   parameters are passed when inheriting the trait, but arguments for implicit parameters are missing,
+   these will be provided through implicit search as usual.
+
+ - If a trait `T` takes only implicit parameters and the trait is inherited from a class `C` but `C`'s superclass
+   does not derive from `T`, then implicit arguments are provided.
+
 ## See Also ##
 
 
